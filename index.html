@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 신호등 실습</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+:root{--ink:#0A1E55;--brand:#48A828;--body:#3E4A5C;--muted:#6B7280;--surf:#F5F7FA;--line:#E2E7EF;--tint:#F3FAEE;--y:#E0A21B;--r:#C83E4D}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:#fff;color:var(--ink);font-size:17px;line-height:1.6;-webkit-text-size-adjust:100%}
+header{background:var(--ink);color:#fff;padding:26px 18px 22px}
+header .top{font-size:13px;color:#9FE07A;font-weight:600}
+header h1{font-size:25px;font-weight:800;line-height:1.3;margin:6px 0 8px}
+header p{font-size:14px;color:#C5D0E8}
+nav.tabs{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:8px 8px}
+nav.tabs button{border:0;background:var(--surf);color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;line-height:1.25;border-radius:10px;padding:7px 2px 8px;min-height:52px;cursor:pointer;word-break:keep-all}
+nav.tabs button b{display:block;font-size:16px;margin-bottom:1px}
+nav.tabs button[aria-selected=true]{background:var(--ink);color:#fff}
+section[hidden]{display:none}
+section{border-bottom:0}
+.next{display:block;width:100%;margin:26px 0 6px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);font:inherit;font-size:16px;font-weight:700;border-radius:12px;padding:13px;cursor:pointer}
+header{padding:20px 18px 16px}header h1{font-size:22px}
+nav.old{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);display:flex;overflow-x:auto;gap:6px;padding:10px 12px}
+nav a{flex:none;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;background:var(--surf);border-radius:20px;padding:6px 13px}
+main{padding:6px 16px 60px;max-width:680px;margin:0 auto}
+section{padding:26px 0 8px;border-bottom:1px solid var(--line)}
+section:last-child{border:0}
+.eb{font-size:13px;font-weight:700;color:var(--brand);letter-spacing:.2px}
+h2{font-size:22px;font-weight:800;margin:4px 0 12px;line-height:1.35}
+h3{font-size:17px;font-weight:700;margin:18px 0 8px}
+.note{font-size:14px;color:var(--muted);margin:6px 0 12px}
+.card{background:var(--surf);border-radius:12px;padding:14px 14px 12px;margin:10px 0}
+.prompt{background:var(--tint);border-left:5px solid var(--brand);border-radius:10px;padding:13px 14px;margin:8px 0;font-size:16px;white-space:pre-wrap;word-break:keep-all}
+.src{background:#fff;border:1.5px solid var(--ink);border-radius:10px;padding:13px 14px;margin:8px 0;font-size:15px;white-space:pre-wrap;word-break:keep-all}
+.src b{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+button.copy{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--ink);color:#fff;font:inherit;font-size:15px;font-weight:700;border-radius:9px;padding:10px 16px;margin:2px 0 6px;min-height:44px;cursor:pointer}
+button.copy.done{background:var(--brand)}
+ol.five{list-style:none;counter-reset:n}
+ol.five li{counter-increment:n;padding:10px 0 10px 38px;position:relative;border-bottom:1px solid var(--line)}
+ol.five li:before{content:counter(n);position:absolute;left:0;top:10px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.five b{display:block}
+ol.five span{font-size:14px;color:var(--muted)}
+.sig{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.sig span{font-size:14px;font-weight:700;border-radius:20px;padding:5px 12px;background:var(--surf)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:0}
+details{background:var(--surf);border-radius:10px;margin:8px 0;padding:0 14px}
+details summary{list-style:none;cursor:pointer;padding:13px 0;font-weight:700;font-size:16px;display:flex;justify-content:space-between;gap:8px}
+details summary::-webkit-details-marker{display:none}
+details summary:after{content:"＋";color:var(--muted)}
+details[open] summary:after{content:"－"}
+details .in{padding:0 0 12px}
+.stop{font-size:15px;color:var(--r);font-weight:600;margin:6px 0}
+.check{counter-reset:c}
+.check div{background:var(--surf);border-radius:10px;padding:11px 14px;margin:8px 0}
+.check b{color:var(--brand)}
+label{display:block;font-size:14px;font-weight:700;margin:14px 0 6px}
+input,textarea{width:100%;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--ink);background:#fff}
+textarea{min-height:64px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--brand);border-color:transparent}
+.row{display:flex;gap:10px;align-items:flex-start;margin:12px 0}
+.row .dot{flex:none;width:18px;height:18px;margin-top:4px}
+.row p{font-size:16px;font-weight:600}
+footer{font-size:13px;color:var(--muted);text-align:center;padding:24px 16px 40px}
+</style>
+</head>
+<body>
+<header>
+ <div class="top">요양병원 관리자 AI 활용 교육</div>
+ <h1>AI, 어디까지 맡길까요<br>오늘의 실습</h1>
+ <p>이 페이지의 상황과 자료는 모두 실습용으로 만든 가상 내용입니다. 실제 환자·직원 정보는 입력하지 않습니다.</p>
+</header>
+<nav class="tabs" role="tablist">
+ <button role="tab" data-tab="m1"><b>1</b>써 보기</button>
+ <button role="tab" data-tab="m2"><b>2</b>넣지 않는 정보</button>
+ <button role="tab" data-tab="m3"><b>3</b>신호등</button>
+ <button role="tab" data-tab="m4"><b>4</b>초안·확인</button>
+ <button role="tab" data-tab="m5"><b>5</b>부서 약속</button>
+</nav>
+<main>
+
+<section id="m1">
+ <div class="eb">1 · 일단 써 보기</div>
+ <h2>세 가지를 차례로 해 봅니다</h2>
+ <h3>체험 1 · 말로 묻기</h3>
+ <p class="note">AI 앱 입력창의 마이크를 누르고 아래 문장을 읽으세요. 음성이 안 되면 복사해서 붙여 넣으세요.</p>
+ <div class="prompt">나는 요양병원 부서장이야. 이번 주에 들어온 신규 직원에게 첫날 해 줄 환영 인사를 1분 분량으로 써 줘. 따뜻하지만 너무 길지 않게.</div>
+ <button class="copy">요청문 복사</button>
+ <h3>체험 2 · 사진으로 요약</h3>
+ <p class="note">강의 화면의 가상 공지문을 찍어 올린 뒤, 이 문장을 붙여 넣으세요.</p>
+ <div class="prompt">이 공지문을 세 줄로 요약해 줘. 그리고 직원이 해야 할 일만 따로 뽑아서 기한과 함께 정리해 줘.</div>
+ <button class="copy">요청문 복사</button>
+ <h3>체험 3 · 보호자 문자 초안</h3>
+ <div class="prompt">요양병원에서 보호자에게 보낼 문자야. 10월부터 평일 면회 시간이 오후 2시에서 5시로 바뀐다는 내용을 정중하고 짧게, 150자 안팎으로 써 줘. 병원 이름은 [병원명]으로 비워 둬.</div>
+ <button class="copy">요청문 복사</button>
+ <p class="note">결과가 나오면 "조금 더 따뜻하게", "더 간결하게"로 한 번 더 시켜 비교해 보세요.</p>
+ <button class="next" data-go="m2">다음 · 넣지 않는 정보 →</button>
+</section>
+
+<section id="m2">
+ <div class="eb">2 · 넣지 않는 정보</div>
+ <h2>AI 입력창에 넣지 않는 환자정보</h2>
+ <ol class="five">
+  <li><b>이름 · 생년월일 · 환자번호</b><span>한 가지만 있어도 누구인지 특정됩니다</span></li>
+  <li><b>얼굴 · 상처 · 병실이 보이는 사진</b><span>사진은 가리기가 가장 어렵습니다</span></li>
+  <li><b>보호자 연락처 · 주소</b><span>환자 본인이 아닌 가족의 개인정보입니다</span></li>
+  <li><b>진단명 · 투약 · 검사 결과 원본</b><span>건강에 관한 정보는 민감정보로 따로 보호됩니다</span></li>
+  <li><b>병실 · 나이 · 입원일 조합</b><span>이름이 없어도 병원 안에서는 누군지 압니다</span></li>
+ </ol>
+ <h3>바꿔서 넣기</h3>
+ <div class="card"><b>넣지 않는 문장</b><br>305호 김순자 할머니(84세), 치매로 입원 중. 어젯밤부터 식사를 거의 안 하심. 따님 연락처로 연락드려야 함.</div>
+ <div class="card" style="background:var(--tint)"><b>바꿔서 넣는 문장</b><br>80대 여성 입원 환자 A. 최근 식사량이 줄었음. 보호자에게 이 상황을 알리는 문자를 정중하게 써 줘.</div>
+ <h3>학습 설정 끄기</h3>
+ <div class="card"><b>ChatGPT</b> 설정 → 데이터 제어 → '모두를 위한 모델 개선' 끄기</div>
+ <div class="card"><b>Gemini</b> 설정 → 활동 기록(Gemini 앱 활동) 끄기. 꺼 두어도 대화는 최대 72시간 보관됩니다.</div>
+ <p class="note">메뉴 이름은 2026년 8월 확인 기준이며 앱 업데이트로 바뀔 수 있습니다.</p>
+ <button class="next" data-go="m3">다음 · 신호등 →</button>
+</section>
+
+<section id="m3">
+ <div class="eb">3 · AI 신호등</div>
+ <h2>신호등 문항별 요청문</h2>
+ <div class="sig"><span><i class="dot" style="background:var(--brand)"></i>초록 AI에 맡김</span><span><i class="dot" style="background:var(--y)"></i>노랑 초안 + 사람 확인</span><span><i class="dot" style="background:var(--r)"></i>빨강 AI 금지</span></div>
+ <p class="note">강사가 알려 주는 번호만 열어서 시켜 보세요. 결과를 본 뒤 투표 화면의 같은 문항에 다시 누릅니다.</p>
+
+ <details><summary>1 · 직원 교육 공지문</summary><div class="in"><div class="prompt">다음 주 목요일 오후 3시, 3층 회의실에서 전 직원 대상 감염관리 교육이 30분 동안 있어. 직원 공지문을 짧게 써 줘.</div><button class="copy">복사</button></div></details>
+ <details><summary>2 · 월례 회의 안건 정리</summary><div class="in"><div class="prompt">부서별로 올라온 안건이야. 회의 안건 순서로 정리하고 안건마다 논의할 질문을 하나씩 붙여 줘.
+- 간호부: 야간 인력 배치
+- 원무과: 10월 면회 시간 변경 안내
+- 총무과: 냉난방 점검 일정
+- 영양과: 가을 특식 메뉴</div><button class="copy">복사</button></div></details>
+ <details><summary>3 · 요양보호사 채용공고</summary><div class="in"><div class="prompt">요양병원 요양보호사 채용공고 초안을 써 줘. 조건: 3교대, 정규직, 요양보호사 자격증 필수, 경력자 우대. 병원 이름은 [병원명]으로 비워 둬.</div><button class="copy">복사</button></div></details>
+ <details><summary>4 · 식단·프로그램 안내 문구</summary><div class="in"><div class="prompt">보호자 게시판에 올릴 10월 프로그램 안내 문구를 써 줘. 월요일 음악 활동, 수요일 원예 활동, 금요일 가을 산책(날씨 좋을 때). 밝고 짧게.</div><button class="copy">복사</button></div></details>
+ <details><summary>5 · 보호자 면회 변경 문자</summary><div class="in"><div class="prompt">10월부터 평일 면회 시간이 오후 2시에서 5시로 바뀐다는 보호자 안내 문자를 150자 안팎으로 써 줘. 병원 이름은 [병원명]으로 비워 둬.</div><button class="copy">복사</button></div></details>
+ <details><summary>6 · 인증평가 대비 규정 요약</summary><div class="in"><div class="prompt">아래는 가상의 병원 규정이야. 부서원이 알아야 할 내용을 5줄로 요약해 줘.
+
+제1조 모든 입원 환자는 입원 당일 낙상 위험도를 평가한다. 제2조 고위험 환자는 침대 난간을 올리고 침대 높이를 가장 낮게 유지한다. 제3조 야간에는 2시간마다 순회하며 기록한다. 제4조 낙상 발생 시 즉시 담당 의사에게 보고하고 24시간 안에 사건 보고서를 제출한다.</div><button class="copy">복사</button><p class="note">결과에 원문에 없는 조항이나 숫자가 들어갔는지 확인해 보세요.</p></div></details>
+ <details><summary>7 · 보호자 민원 답변</summary><div class="in"><div class="prompt">가상 민원이야. 보호자가 "어머니 옷이 자꾸 바뀌어 있고 세탁물이 섞인다"고 항의했어. 사과하고 확인하겠다는 답장 초안을 써 줘. 확인되지 않은 약속은 넣지 마.</div><button class="copy">복사</button><p class="note">"반드시", "즉시", "책임지고" 같은 약속이 들어갔는지 보세요.</p></div></details>
+ <details><summary>8 · 병원 홍보 블로그 글</summary><div class="in"><div class="prompt">요양병원 가을 원예 프로그램을 소개하는 블로그 글을 500자로 써 줘. 환자 이름이나 사진 설명은 넣지 마.</div><button class="copy">복사</button><p class="note">실제로 올릴 때 환자 사진이나 후기가 붙으면 색이 바뀝니다.</p></div></details>
+ <details><summary>9 · 투약 용량 판단</summary><div class="in"><p class="stop">이 업무는 요청문을 제공하지 않습니다.</p><p class="note">의료인이 판단할 일입니다. 요청문이 없다는 것 자체가 판단 근거입니다.</p></div></details>
+ <details><summary>10 · 실명·사진 든 경과기록 정리</summary><div class="in"><p class="stop">이 업무는 요청문을 제공하지 않습니다.</p><p class="note">환자정보 원본이 있어야만 할 수 있는 일입니다.</p></div></details>
+ <details><summary>11 · 낙상 사고 원인 판정</summary><div class="in"><div class="prompt">가상 상황이야. 80대 입원 환자 A가 새벽 3시쯤 혼자 화장실에 가다 넘어졌어. 침대 난간은 내려져 있었고 야간 순회는 2시에 있었어. 사고 원인이 뭔지 판정해 줘.</div><button class="copy">복사</button><p class="note">AI가 얼마나 단정적으로 답하는지 보세요. 실제 판정에는 쓰지 않습니다.</p></div></details>
+ <details><summary>12 · 직원 인사평가 작성</summary><div class="in"><div class="prompt">가상 직원 B(3년차)의 인사평가 코멘트 초안을 써 줘. 강점: 환자 응대가 친절함. 보완점: 기록 누락이 잦음.</div><button class="copy">복사</button><p class="note">사람에 대한 평가를 AI 문장으로 내보내도 되는지 생각해 보세요.</p></div></details>
+ <button class="next" data-go="m4">다음 · 초안·확인 →</button>
+</section>
+
+<section id="m4">
+ <div class="eb">4 · 초안 받고 확인하기</div>
+ <h2>과제 하나를 골라 초안을 받고 고칩니다</h2>
+ <details open><summary>A · 보호자 안내문</summary><div class="in">
+  <div class="src"><b>가상 자료 · 메모</b>독감 예방접종 안내
+- 대상: 입원 환자 전원 (보호자 동의 필요)
+- 일정: 10월 14일(화) ~ 16일(목) 오전
+- 장소: 각 병동
+- 동의서: 10월 10일까지 원무과 제출
+- 문의: 원무과</div>
+  <div class="prompt">위 메모로 보호자에게 보낼 안내문을 써 줘. 정중하게, 날짜와 준비할 것이 한눈에 보이게. 병원 이름은 [병원명]으로 비워 둬.</div>
+  <button class="copy" data-with-src="1">자료 + 요청문 복사</button></div></details>
+ <details><summary>B · 지침 요약</summary><div class="in">
+  <div class="src"><b>가상 자료 · 낙상 예방 수칙 원문</b>1. 입원 당일 모든 환자의 낙상 위험도를 평가하고 기록한다.
+2. 고위험 환자는 침대 난간을 올리고 침대 높이를 가장 낮게 유지한다.
+3. 야간에는 2시간마다 순회하며 순회 기록지에 서명한다.
+4. 화장실 이동 시 도움이 필요한 환자에게는 호출벨 위치를 다시 안내한다.
+5. 낙상 발생 시 즉시 담당 의사에게 보고하고 24시간 안에 사건 보고서를 제출한다.
+6. 미끄럼 방지 양말을 지급하고 병실 바닥의 물기를 즉시 닦는다.</div>
+  <div class="prompt">위 수칙을 우리 부서원이 매일 지킬 것 다섯 줄로 요약해 줘. 원문에 없는 내용은 넣지 마.</div>
+  <button class="copy" data-with-src="1">자료 + 요청문 복사</button></div></details>
+ <details><summary>C · 회의록 정리</summary><div class="in">
+  <div class="src"><b>가상 자료 · 부서장 회의 메모</b>야간 인력 - 11월부터 병동별 1명 추가 검토, 간호부장이 인건비 안 만들어 다음 회의 때
+면회 변경 - 원무과에서 문자 발송, 게시판 공지도 같이, 이번 주 금요일까지
+냉난방 - 총무과 점검 10월 셋째 주, 병동에 미리 알릴 것
+특식 - 영양과 추석 이후 메뉴 초안 공유, 날짜 미정</div>
+  <div class="prompt">위 메모를 회의록으로 정리해 줘. 표로: 안건 / 결정 사항 / 담당 / 기한. 메모에 없는 기한은 '미정'으로 적어.</div>
+  <button class="copy" data-with-src="1">자료 + 요청문 복사</button></div></details>
+ <h3>확인 3단계</h3>
+ <div class="check">
+  <div><b>① 사실</b> 날짜 · 시간 · 숫자 · 이름이 원래 자료와 같은가</div>
+  <div><b>② 약속</b> 병원이 지킬 수 없는 약속이 들어가 있지 않은가 ("반드시", "책임지고", "즉시")</div>
+  <div><b>③ 정보</b> 환자를 알아볼 수 있는 정보가 남아 있지 않은가</div>
+ </div>
+ <label for="checker">우리 부서라면 이 문서를 누가 확인하나요? (직책)</label>
+ <input id="checker" data-save placeholder="예: 수간호사">
+ <button class="next" data-go="m5">다음 · 부서 약속 →</button>
+</section>
+
+<section id="m5">
+ <div class="eb">5 · 우리 부서 AI 약속</div>
+ <h2>빈칸을 채워 세 문장을 만듭니다</h2>
+ <label for="dept">부서</label>
+ <input id="dept" data-save placeholder="예: 원무과">
+ <div class="row"><i class="dot" style="background:var(--brand)"></i><p>우리 부서는 ___ 은(는) AI에 맡긴다.</p></div>
+ <textarea id="g" data-save placeholder="예: 교육 공지문, 회의 안건 정리"></textarea>
+ <div class="row"><i class="dot" style="background:var(--y)"></i><p>___ 은(는) AI가 초안을 쓰고 ___ 가 확인한 뒤 내보낸다.</p></div>
+ <textarea id="y1" data-save placeholder="예: 보호자 안내 문자"></textarea>
+ <input id="y2" data-save placeholder="확인하는 사람 · 예: 원무과장" style="margin-top:8px">
+ <div class="row"><i class="dot" style="background:var(--r)"></i><p>___ 은(는) AI에 넣지 않는다.</p></div>
+ <textarea id="r" data-save placeholder="예: 환자 실명·사진, 보호자 연락처"></textarea>
+ <p style="margin-top:14px"><button class="copy" id="copyPromise">세 문장 복사하기</button></p>
+ <p class="note">복사한 뒤 휴대폰 메모장이나 카톡 '나에게 보내기'에 붙여 넣어 저장하세요. 이 페이지는 창을 닫으면 쓴 내용이 남지 않을 수 있습니다.</p>
+</section>
+</main>
+<footer>다윈서비스 · 실습용 가상 자료 · 2026. 9. 29.</footer>
+<script>
+function copyText(t,btn){
+  const done=()=>{const o=btn.textContent;btn.textContent="복사했습니다";btn.classList.add("done");setTimeout(()=>{btn.textContent=o;btn.classList.remove("done")},1600)};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(done,()=>fallback(t,done))}else fallback(t,done);
+}
+function fallback(t,done){const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(ta);done()}
+document.querySelectorAll("button.copy:not(#copyPromise)").forEach(b=>{
+  b.addEventListener("click",()=>{
+    const box=b.parentElement; const pr=b.previousElementSibling;
+    let t=pr?pr.textContent.trim():"";
+    if(b.dataset.withSrc){const src=box.querySelector(".src");if(src){const c=src.cloneNode(true);const lb=c.querySelector("b");if(lb)lb.remove();t=c.textContent.trim()+"\n\n"+t}}
+    copyText(t,b);
+  });
+});
+const K="gunsan-ai-0929:";
+document.querySelectorAll("[data-save]").forEach(el=>{
+  try{const v=localStorage.getItem(K+el.id);if(v)el.value=v}catch(e){}
+  el.addEventListener("input",()=>{try{localStorage.setItem(K+el.id,el.value)}catch(e){}});
+});
+
+const tabs=[...document.querySelectorAll("nav.tabs button")];
+function show(id,scroll){
+  document.querySelectorAll("main section").forEach(sec=>sec.hidden=(sec.id!==id));
+  tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.tab===id?"true":"false"));
+  try{localStorage.setItem(K+"tab",id)}catch(e){}
+  if(scroll)window.scrollTo({top:document.querySelector("header").offsetHeight,behavior:"smooth"});
+}
+tabs.forEach(t=>t.addEventListener("click",()=>show(t.dataset.tab,true)));
+document.querySelectorAll("button.next").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go,true)));
+let start="m1";try{start=(location.hash||"").slice(1)||localStorage.getItem(K+"tab")||"m1"}catch(e){}
+if(!document.getElementById(start))start="m1";
+show(start,false);
+
+document.getElementById("copyPromise").addEventListener("click",e=>{
+  const v=id=>document.getElementById(id).value.trim()||"___";
+  const t="["+v("dept")+" AI 약속]\n"+
+    "1. 우리 부서는 "+v("g")+" 은(는) AI에 맡긴다.\n"+
+    "2. "+v("y1")+" 은(는) AI가 초안을 쓰고 "+v("y2")+" 가 확인한 뒤 내보낸다.\n"+
+    "3. "+v("r")+" 은(는) AI에 넣지 않는다.";
+  copyText(t,e.currentTarget);
+});
+</script>
+</body>
+</html>
